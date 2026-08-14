@@ -1,9 +1,7 @@
-DBW PLANNER 2026/27 — V5 CLOUD SYNC
+DBW PLANNER V6
+1) PRIMA esegui MIGRAZIONE_SUPABASE_V6.sql nel SQL Editor di Supabase.
+2) Verifica "Success. No rows returned".
+3) Solo dopo sostituisci su GitHub Pages i file della V5 con quelli di questa cartella.
+4) Apri l'app e usa "Stagioni e squadre".
 
-Questa versione sincronizza gli eventi tramite Supabase tra Mac, iPhone e altri dispositivi.
-
-Per aggiornare GitHub Pages, sostituisci i file del repository con quelli contenuti in questa cartella (soprattutto index.html e service-worker.js).
-
-Al primo avvio su un dispositivo con il database DBW vuoto, gli allenamenti ricorrenti vengono caricati automaticamente nel cloud.
-
-IMPORTANTE: la configurazione attuale usa policy anonime sulla sola tabella dbw_events. Funziona, ma chi conosce il link dell'app e ne analizza il codice potrebbe tecnicamente modificare i dati DBW. La prossima evoluzione consigliata è aggiungere login personale/PIN con Supabase Auth e restringere le policy.
+La migrazione conserva gli eventi DBW esistenti e non tocca le tabelle di MANEGGIO VP.

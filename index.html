@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#175737" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="DBW Planner" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<title>Dolomiti Bellunesi Women - Planning 2026/27</title>
+<style>
+:root{
+  --green:#247a4b;
+  --green-dark:#175737;
+  --pink:#f7a2b3;
+  --pink-dark:#df7289;
+  --ink:#1f2328;
+  --muted:#6a737d;
+  --bg:#f5f7f6;
+  --card:#ffffff;
+  --line:#e4e9e6;
+  --shadow:0 14px 35px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);overscroll-behavior-y:none;padding-bottom:env(safe-area-inset-bottom)}
+button,input,select{font:inherit}
+.app{min-height:100vh}
+header{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff;padding:calc(14px + env(safe-area-inset-top)) 22px 14px;position:sticky;top:0;z-index:10;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.header-inner{max-width:1300px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{display:flex;align-items:center;gap:14px}.brand img{width:60px;height:60px;border-radius:50%;background:#fff;padding:3px}.brand h1{margin:0;font-size:clamp(20px,2.4vw,30px);line-height:1.05}.brand small{display:block;opacity:.85;margin-top:5px}
+.header-actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:750;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-1px)}.btn-light{background:#fff;color:var(--green-dark)}.btn-pink{background:var(--pink);color:#3a1c24}.btn-ghost{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.25)}
+main{max-width:1300px;margin:24px auto;padding:0 18px 50px}
+.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;margin-bottom:18px}.tabs{display:flex;gap:10px;flex-wrap:wrap}.tab{background:#fff;border:1px solid var(--line);padding:11px 18px;border-radius:999px;font-weight:800;cursor:pointer}.tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+.control{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.view-switch{display:flex;gap:6px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px}.view-switch button{border:0;background:transparent;padding:8px 12px;border-radius:9px;font-weight:700;cursor:pointer}.view-switch button.active{background:#e9f4ee;color:var(--green-dark)}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}.stat strong{font-size:26px;color:var(--green-dark)}.stat span{display:block;color:var(--muted);margin-top:4px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.panel-head h2{margin:0}.panel-head .period{color:var(--muted);font-weight:700}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr)}.dow{padding:12px 8px;text-align:center;font-weight:800;background:#f0f4f2;color:var(--green-dark);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.day{min-height:145px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px;position:relative}.day.other{background:#fafafa;color:#aaa}.day .num{font-weight:800;font-size:14px;margin-bottom:7px}.event{border-radius:10px;padding:7px 8px;margin:5px 0;font-size:12px;line-height:1.25;cursor:pointer;border:1px solid transparent}.event.training{background:#eaf5ef;border-color:#cce7d7;color:#164a30}.event.extra{background:#fff6df;border-color:#f2dd9a;color:#684e00}.event.match{background:linear-gradient(135deg,#fff6f8,#ffe1e9);border-color:#efa8ba;color:#70273a;font-weight:750;box-shadow:inset 0 0 0 1px rgba(223,114,137,.08)}.event.match>div:first-child{display:inline-block;background:var(--pink-dark);color:#fff;border-radius:999px;padding:3px 7px;margin-bottom:2px;font-size:10px;letter-spacing:.3px}.event .time{font-weight:850}.event .small{opacity:.85;margin-top:2px}.add-mini{position:absolute;right:7px;top:6px;border:0;background:#eef3f0;width:26px;height:26px;border-radius:8px;cursor:pointer;color:var(--green-dark);font-weight:900}
+.week-list{padding:14px}.week-day{border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}.week-day-head{padding:12px 14px;background:#f3f6f4;font-weight:850}.week-event{padding:14px;display:grid;grid-template-columns:130px 1fr auto;gap:16px;align-items:center;border-top:1px solid var(--line)}.week-event:first-of-type{border-top:0}.badge{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:7px 10px;font-weight:900;font-size:12px}.badge.training{background:#eaf5ef;color:#164a30}.badge.extra{background:#fff3cb;color:#745300}.badge.match{background:#ffdfe7;color:#7b3040}.week-event h3{margin:0 0 4px}.week-event p{margin:2px 0;color:var(--muted)}.icon-btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 10px;cursor:pointer}
+.empty{padding:50px 20px;text-align:center;color:var(--muted)}
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;padding:20px;align-items:center;justify-content:center}.modal-backdrop.show{display:flex}.modal{width:min(620px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:20px;box-shadow:0 30px 70px rgba(0,0,0,.25)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modal-head h3{margin:0}.modal-body{padding:20px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin-bottom:12px}.field label{display:block;font-weight:800;margin-bottom:6px}.field input,.field select{width:100%;padding:11px 12px;border:1px solid #ccd6d0;border-radius:10px;background:#fff}.modal-actions{display:flex;justify-content:space-between;gap:10px;padding:16px 20px;border-top:1px solid var(--line)}.danger{background:#ffe4e6;color:#8a1d2b}.hidden{display:none!important}
+@media(max-width:850px){
+.toolbar{grid-template-columns:1fr}.summary{grid-template-columns:repeat(3,1fr)}.calendar-grid{font-size:11px}.day{min-height:110px;padding:5px}.event{padding:5px;font-size:10px}.week-event{grid-template-columns:1fr}.header-inner{align-items:flex-start;flex-direction:column}.header-actions{width:100%}.header-actions .btn{flex:1;min-height:44px}.grid2{grid-template-columns:1fr}.tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{white-space:nowrap;min-height:44px}.control{min-height:46px}.view-switch button{min-height:40px}}
+@media(max-width:600px){
+ header{padding-left:14px;padding-right:14px}.header-inner{gap:12px}.brand{gap:10px}.brand img{width:48px;height:48px}.brand h1{font-size:18px}.brand small{font-size:12px}.header-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.header-actions .btn{padding:10px 8px;font-size:12px}.header-actions #addEventBtn{grid-column:1/-1;font-size:14px}
+ main{margin:14px auto;padding:0 10px 34px}.toolbar{gap:9px;margin-bottom:10px}.tabs{margin:0 -2px}.tab{padding:9px 14px;font-size:13px}.view-switch{width:100%}.view-switch button{flex:1}.summary{gap:7px;margin-bottom:10px}.stat{padding:10px 8px;border-radius:12px;box-shadow:none;text-align:center}.stat strong{font-size:20px}.stat span{font-size:10px;line-height:1.15}.panel{border-radius:14px}.panel-head{padding:12px;align-items:flex-start;flex-direction:column}.panel-head h2{font-size:18px}.panel-head .period{font-size:12px}.panel-head>div:last-child{display:grid;grid-template-columns:44px 1fr 44px;width:100%;gap:6px}.panel-head .icon-btn{min-height:40px}.calendar-grid{min-width:760px}.calendar-wrap{overflow:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}.dow{position:sticky;top:0;z-index:2}.day{min-height:105px}.week-list{padding:8px}.week-day{border-radius:12px;margin-bottom:9px}.week-day-head{padding:10px 12px;font-size:12px}.week-event{padding:12px;gap:10px}.week-event h3{font-size:15px}.week-event p{font-size:13px}.badge{font-size:11px}.icon-btn{min-height:42px}.modal-backdrop{padding:0;align-items:flex-end}.modal{width:100%;max-height:92dvh;border-radius:20px 20px 0 0;padding-bottom:env(safe-area-inset-bottom)}.modal-head{position:sticky;top:0;background:#fff;z-index:2;padding:14px 16px}.modal-body{padding:14px}.modal-actions{position:sticky;bottom:0;background:#fff;padding:12px 14px calc(12px + env(safe-area-inset-bottom));flex-wrap:wrap}.modal-actions .btn{min-height:46px;flex:1}.field input,.field select{font-size:16px;min-height:48px}.field label{font-size:13px}}
+.calendar-grid{min-width:820px}.calendar-wrap{overflow:auto}.brand img{width:52px;height:52px}.panel-head{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="header-inner">
+    <div class="brand"><img src="logo.png" alt="Logo"><div><h1>DOLOMITI BELLUNESI WOMEN</h1><small>Planning stagione 2026/27</small></div></div>
+    <div class="header-actions">
+      <button class="btn btn-pink" id="addEventBtn">＋ Aggiungi evento</button>
+      <button class="btn btn-light" id="exportWeekly">PDF settimanale</button>
+      <button class="btn btn-light" id="exportMonthly">PDF mensile</button>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="toolbar">
+    <div class="tabs" id="categoryTabs"></div>
+    <input class="control" type="month" id="monthPicker" min="2026-08" max="2027-06">
+    <div class="view-switch"><button id="monthViewBtn" class="active">Mese</button><button id="weekViewBtn">Settimana</button></div>
+  </div>
+  <div class="summary"><div class="stat"><strong id="statTrainings">0</strong><span>Allenamenti nel mese</span></div><div class="stat"><strong id="statMatches">0</strong><span>Partite nel mese</span></div><div class="stat"><strong id="statExtras">0</strong><span>Eventi extra nel mese</span></div></div>
+  <section class="panel">
+    <div class="panel-head"><div><h2 id="panelTitle"></h2><div class="period" id="panelSubtitle"></div></div><div><button class="icon-btn" id="prevBtn">←</button> <button class="icon-btn" id="todayBtn">Oggi</button> <button class="icon-btn" id="nextBtn">→</button></div></div>
+    <div id="monthView" class="calendar-wrap"></div>
+    <div id="weekView" class="week-list hidden"></div>
+  </section>
+</main>
+</div>
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modalTitle">Aggiungi evento</h3><button class="icon-btn" id="closeModal">✕</button></div>
+    <form id="eventForm">
+      <div class="modal-body">
+        <input type="hidden" id="eventId">
+        <div class="grid2">
+          <div class="field"><label>Categoria</label><select id="eventCategory"><option>UNDER 12</option><option>UNDER 17</option><option>PRIMA SQUADRA</option></select></div>
+          <div class="field"><label>Tipo</label><select id="eventType"><option value="training">Allenamento</option><option value="extra">Allenamento extra</option><option value="match">Partita</option><option value="other">Altro</option></select></div>
+        </div>
+        <div class="grid2"><div class="field"><label>Data</label><input id="eventDate" type="date" required></div><div class="field" id="standardTimeField"><label>Orario</label><input id="eventTime" placeholder="18:45-20:15"></div></div>
+        <div class="field"><label>Luogo</label><input id="eventPlace" placeholder="Sedico - Campo principale" required></div>
+        <div id="matchFields">
+          <div class="grid2"><div class="field"><label>Tipo di partita</label><select id="eventCompetition"><option value="Campionato">Campionato</option><option value="Amichevole">Amichevole</option><option value="Coppa">Coppa</option><option value="Torneo">Torneo</option></select></div><div class="field"><label>Avversario</label><input id="eventOpponent" placeholder="es. Vittorio Veneto"></div></div>
+          <div class="grid2"><div class="field"><label>Ora del ritrovo</label><input id="eventMeetingTime" type="time"></div><div class="field"><label>Ora di inizio partita</label><input id="eventStartTime" type="time"></div></div>
+          <div class="field"><label>Casa / Trasferta</label><select id="eventHomeAway"><option value="home">Casa</option><option value="away">Trasferta</option></select></div>
+        </div>
+        <div class="field"><label>Spogliatoio</label><input id="eventLocker" placeholder="es. 2 (facoltativo)"></div>
+        <div class="field"><label>Note</label><input id="eventNotes" placeholder="Facoltative"></div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn danger hidden" id="deleteEvent">Elimina</button><div style="margin-left:auto;display:flex;gap:8px"><button type="button" class="btn" id="cancelModal">Annulla</button><button type="submit" class="btn btn-pink">Salva</button></div></div>
+    </form>
+  </div>
+</div>
+<script>
+const CATEGORIES=["UNDER 12","UNDER 17","PRIMA SQUADRA"];
+const MONTHS=["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
+const DAYS=["Lun","Mar","Mer","Gio","Ven","Sab","Dom"];
+let activeCategory="UNDER 12";
+let currentDate=new Date(2026,8,1);
+let view="month";
+const STORAGE_KEY="dbw_planner_2026_27_v1";
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function iso(d){return d.toISOString().slice(0,10)}
+function dateLocal(y,m,d){return new Date(y,m,d,12,0,0)}
+function recurringEvents(){
+  const configs=[
+    {cat:"UNDER 12",start:"2026-09-07",days:{1:["18:45-20:15","Sedico - Campo principale"],2:["18:00-19:30","Sedico - Campo principale"],4:["18:00-19:30","Sedico - Campo principale"]}},
+    {cat:"UNDER 17",start:"2026-08-24",days:{1:["18:45-20:15","Sedico - Campo principale"],3:["18:45-20:15","Sedico - Campo principale"],4:["18:45-20:15","Sedico - Campo sussidiario"]}},
+    {cat:"PRIMA SQUADRA",start:"2026-08-24",days:{2:["19:30-21:00","Sedico - Campo sussidiario"],3:["19:30-21:00","Sedico - Campo principale"],5:["19:30-21:00","Mas"]}}
+  ];
+  const out=[]; const end=new Date("2027-06-30T12:00:00");
+  for(const c of configs){let d=new Date(c.start+"T12:00:00"); while(d<=end){const js=d.getDay(); if(c.days[js]){const [time,place]=c.days[js]; out.push({id:"base_"+c.cat+"_"+iso(d),base:true,category:c.cat,type:"training",date:iso(d),time,place,opponent:"",homeAway:"home",competition:"",meetingTime:"",startTime:"",locker:"",notes:""});} d.setDate(d.getDate()+1)}}
+  return out;
+}
+function loadData(){const raw=localStorage.getItem(STORAGE_KEY); if(raw) return JSON.parse(raw); const data=recurringEvents(); localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); return data}
+let events=loadData();
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(events))}
+function byDate(a,b){return a.date.localeCompare(b.date)||a.time.localeCompare(b.time)}
+function categoryEvents(){return events.filter(e=>e.category===activeCategory).sort(byDate)}
+function renderTabs(){const el=document.getElementById('categoryTabs');el.innerHTML='';CATEGORIES.forEach(c=>{const b=document.createElement('button');b.className='tab'+(c===activeCategory?' active':'');b.textContent=c;b.onclick=()=>{activeCategory=c;renderAll()};el.appendChild(b)})}
+function renderAll(){renderTabs();document.getElementById('monthPicker').value=`${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}`;document.getElementById('panelTitle').textContent=activeCategory;document.getElementById('panelSubtitle').textContent=view==='month'?`${MONTHS[currentDate.getMonth()]} ${currentDate.getFullYear()}`:weekLabel(currentDate);renderMonth();renderWeek();renderStats()}
+function renderStats(){const y=currentDate.getFullYear(),m=currentDate.getMonth();const es=categoryEvents().filter(e=>{const d=new Date(e.date+'T12:00:00');return d.getFullYear()===y&&d.getMonth()===m});document.getElementById('statTrainings').textContent=es.filter(e=>e.type==='training').length;document.getElementById('statMatches').textContent=es.filter(e=>e.type==='match').length;document.getElementById('statExtras').textContent=es.filter(e=>e.type==='extra'||e.type==='other').length}
+function renderMonth(){const target=document.getElementById('monthView');const y=currentDate.getFullYear(),m=currentDate.getMonth();let html='<div class="calendar-grid">'+DAYS.map(d=>`<div class="dow">${d}</div>`).join('');const first=dateLocal(y,m,1);let start=new Date(first);let dow=(first.getDay()+6)%7;start.setDate(start.getDate()-dow);for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);const ds=iso(d),other=d.getMonth()!==m;const ev=categoryEvents().filter(e=>e.date===ds);html+=`<div class="day ${other?'other':''}"><button class="add-mini" onclick="openAdd('${ds}')">＋</button><div class="num">${d.getDate()}</div>${ev.map(eventCard).join('')}</div>`}html+='</div>';target.innerHTML=html}
+function eventCard(e){const cls=e.type==='match'?'match':e.type==='extra'?'extra':'training';let title=e.type==='match'?(e.homeAway==='away'?`${e.opponent} - DBW`:`DBW - ${e.opponent}`):(e.type==='extra'?'ALL. EXTRA':'ALLENAMENTO');if(e.type==='match'){const comp=e.competition||'Partita';const start=e.startTime||e.time||'';return `<div class="event ${cls}" onclick="editEvent('${e.id}')"><div><b>⚽ ${comp.toUpperCase()}</b></div><div style="font-weight:900;margin-top:3px">${title}</div>${e.meetingTime?`<div class="small">⏰ Ritrovo ${e.meetingTime}</div>`:''}${start?`<div class="small">⏰ Inizio ${start}</div>`:''}<div class="small">📍 ${e.place}</div>${e.locker?`<div class="small">🚪 Spogl. ${e.locker}</div>`:''}</div>`}return `<div class="event ${cls}" onclick="editEvent('${e.id}')"><div class="time">⏰ ${e.time}</div><div>${title}</div><div class="small">📍 ${e.place}</div>${e.locker?`<div class="small">🚪 Spogl. ${e.locker}</div>`:''}</div>`}
+function mondayOf(d){let x=new Date(d);const day=(x.getDay()+6)%7;x.setDate(x.getDate()-day);x.setHours(12,0,0,0);return x}
+function weekLabel(d){const m=mondayOf(d),s=new Date(m);s.setDate(s.getDate()+6);return `${m.getDate()} ${MONTHS[m.getMonth()]} – ${s.getDate()} ${MONTHS[s.getMonth()]} ${s.getFullYear()}`}
+function renderWeek(){const target=document.getElementById('weekView');const mon=mondayOf(currentDate);let html='';for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);const ds=iso(d);const ev=categoryEvents().filter(e=>e.date===ds);html+=`<div class="week-day"><div class="week-day-head">${DAYS[i].toUpperCase()} ${d.getDate()} ${MONTHS[d.getMonth()].toUpperCase()}</div>`;if(!ev.length){html+='<div class="empty" style="padding:18px">Nessun evento</div>'}else ev.forEach(e=>{const cls=e.type==='match'?'match':e.type==='extra'?'extra':'training';const label=e.type==='match'?`⚽ ${(e.competition||'Partita').toUpperCase()}`:e.type==='extra'?'ALL. EXTRA':'ALLENAMENTO';const title=e.type==='match'?(e.homeAway==='away'?`${e.opponent} - DOLOMITI BELLUNESI WOMEN`:`DOLOMITI BELLUNESI WOMEN - ${e.opponent}`):label;const matchTimes=e.type==='match'?`${e.meetingTime?`<p><b>⏰ Ora del ritrovo:</b> ${e.meetingTime}</p>`:''}${(e.startTime||e.time)?`<p><b>⏰ Inizio partita:</b> ${e.startTime||e.time}</p>`:''}`:`<div style="margin-top:8px;font-weight:900">⏰ ${e.time}</div>`;html+=`<div class="week-event"><div><span class="badge ${cls}">${label}</span>${e.type==='match'?'':matchTimes}</div><div><h3>${title}</h3>${e.type==='match'?matchTimes:''}<p>📍 ${e.place}</p>${e.locker?`<p>🚪 Spogliatoio ${e.locker}</p>`:''}${e.notes?`<p>${e.notes}</p>`:''}</div><button class="icon-btn" onclick="editEvent('${e.id}')">Modifica</button></div>`});html+='</div>'}target.innerHTML=html}
+function switchView(v){view=v;document.getElementById('monthView').classList.toggle('hidden',v!=='month');document.getElementById('weekView').classList.toggle('hidden',v!=='week');document.getElementById('monthViewBtn').classList.toggle('active',v==='month');document.getElementById('weekViewBtn').classList.toggle('active',v==='week');document.getElementById('panelSubtitle').textContent=v==='month'?`${MONTHS[currentDate.getMonth()]} ${currentDate.getFullYear()}`:weekLabel(currentDate)}
+function openModal(){document.getElementById('modalBackdrop').classList.add('show')}
+function closeModal(){document.getElementById('modalBackdrop').classList.remove('show')}
+window.openAdd=function(ds){document.getElementById('eventForm').reset();document.getElementById('eventId').value='';document.getElementById('eventCategory').value=activeCategory;document.getElementById('eventDate').value=ds||iso(new Date());document.getElementById('eventCompetition').value='Campionato';document.getElementById('modalTitle').textContent='Aggiungi evento';document.getElementById('deleteEvent').classList.add('hidden');toggleMatchFields();openModal()}
+window.editEvent=function(id){const e=events.find(x=>x.id===id);if(!e)return;document.getElementById('eventId').value=e.id;document.getElementById('eventCategory').value=e.category;document.getElementById('eventType').value=e.type;document.getElementById('eventDate').value=e.date;document.getElementById('eventTime').value=e.time||'';document.getElementById('eventPlace').value=e.place;document.getElementById('eventOpponent').value=e.opponent||'';document.getElementById('eventHomeAway').value=e.homeAway||'home';document.getElementById('eventCompetition').value=e.competition||'Campionato';document.getElementById('eventMeetingTime').value=e.meetingTime||'';document.getElementById('eventStartTime').value=e.startTime||((e.type==='match'&&e.time&&/^\d{1,2}:\d{2}$/.test(e.time))?e.time:'');document.getElementById('eventLocker').value=e.locker||'';document.getElementById('eventNotes').value=e.notes||'';document.getElementById('modalTitle').textContent='Modifica evento';document.getElementById('deleteEvent').classList.remove('hidden');toggleMatchFields();openModal()}
+function toggleMatchFields(){const isMatch=document.getElementById('eventType').value==='match';document.getElementById('matchFields').classList.toggle('hidden',!isMatch);document.getElementById('standardTimeField').classList.toggle('hidden',isMatch);document.getElementById('eventTime').required=!isMatch;document.getElementById('eventOpponent').required=isMatch;document.getElementById('eventStartTime').required=isMatch}
+document.getElementById('eventForm').addEventListener('submit',ev=>{ev.preventDefault();const id=document.getElementById('eventId').value||uid();const isMatch=document.getElementById('eventType').value==='match';const item={id,base:false,category:document.getElementById('eventCategory').value,type:document.getElementById('eventType').value,date:document.getElementById('eventDate').value,time:isMatch?'':document.getElementById('eventTime').value.trim(),place:document.getElementById('eventPlace').value.trim(),opponent:isMatch?document.getElementById('eventOpponent').value.trim():'',homeAway:isMatch?document.getElementById('eventHomeAway').value:'home',competition:isMatch?document.getElementById('eventCompetition').value:'',meetingTime:isMatch?document.getElementById('eventMeetingTime').value:'',startTime:isMatch?document.getElementById('eventStartTime').value:'',locker:document.getElementById('eventLocker').value.trim(),notes:document.getElementById('eventNotes').value.trim()};const idx=events.findIndex(x=>x.id===id);if(idx>=0)events[idx]=item;else events.push(item);save();closeModal();renderAll()})
+document.getElementById('deleteEvent').onclick=()=>{const id=document.getElementById('eventId').value;if(!id)return;if(confirm('Eliminare questo evento?')){events=events.filter(e=>e.id!==id);save();closeModal();renderAll()}}
+document.getElementById('addEventBtn').onclick=()=>openAdd(iso(new Date()));document.getElementById('closeModal').onclick=closeModal;document.getElementById('cancelModal').onclick=closeModal;document.getElementById('eventType').onchange=toggleMatchFields;
+document.getElementById('monthPicker').onchange=e=>{const [y,m]=e.target.value.split('-').map(Number);currentDate=new Date(y,m-1,1);renderAll()};
+document.getElementById('monthViewBtn').onclick=()=>switchView('month');document.getElementById('weekViewBtn').onclick=()=>switchView('week');
+document.getElementById('prevBtn').onclick=()=>{if(view==='month')currentDate=new Date(currentDate.getFullYear(),currentDate.getMonth()-1,1);else currentDate=new Date(currentDate.getFullYear(),currentDate.getMonth(),currentDate.getDate()-7);renderAll()};
+document.getElementById('nextBtn').onclick=()=>{if(view==='month')currentDate=new Date(currentDate.getFullYear(),currentDate.getMonth()+1,1);else currentDate=new Date(currentDate.getFullYear(),currentDate.getMonth(),currentDate.getDate()+7);renderAll()};
+document.getElementById('todayBtn').onclick=()=>{currentDate=new Date();renderAll()};
+function printDocument(mode){
+ const cat=activeCategory;
+ let start,end,title;
+ if(mode==='month'){
+  start=new Date(currentDate.getFullYear(),currentDate.getMonth(),1,12);end=new Date(currentDate.getFullYear(),currentDate.getMonth()+1,0,12);title=`${MONTHS[currentDate.getMonth()].toUpperCase()} ${currentDate.getFullYear()}`;
+ }else{
+  start=mondayOf(currentDate);end=new Date(start);end.setDate(end.getDate()+6);title=`SETTIMANA ${start.getDate()} ${MONTHS[start.getMonth()].toUpperCase()} - ${end.getDate()} ${MONTHS[end.getMonth()].toUpperCase()} ${end.getFullYear()}`;
+ }
+ const es=categoryEvents().filter(e=>{const d=new Date(e.date+'T12:00:00');return d>=start&&d<=end});
+ const base=location.href.replace(/index\.html.*$/,'');
+ if(mode==='month'){
+  const y=currentDate.getFullYear(),m=currentDate.getMonth();
+  const first=new Date(y,m,1,12), last=new Date(y,m+1,0,12);
+  const gridStart=mondayOf(first); const gridEnd=new Date(last); gridEnd.setDate(last.getDate()+(7-((last.getDay()+6)%7)-1));
+  let cells=''; let d=new Date(gridStart);
+  while(d<=gridEnd){
+   const ds=iso(d), inMonth=d.getMonth()===m;
+   const dayEvents=es.filter(e=>e.date===ds);
+   const evhtml=dayEvents.map(e=>{
+    const match=e.type==='match'; const extra=e.type==='extra';
+    const label=match?'PARTITA':extra?'ALL. EXTRA':e.type==='other'?'ALTRO':'ALLENAMENTO';
+    const opponent=match?(e.homeAway==='away'?`${e.opponent} - DBW`:`DBW - ${e.opponent}`):'';
+    if(match){const comp=(e.competition||'Partita').toUpperCase();const start=e.startTime||e.time||'';return `<div class="ev match"><b>⚽ ${comp}</b>${opponent?`<span class="opp">${opponent}</span>`:''}${e.meetingTime?`<span class="timing">⏰ <strong>Ritrovo:</strong> ${e.meetingTime}</span>`:''}${start?`<span class="timing">⏰ <strong>Inizio:</strong> ${start}</span>`:''}<span>📍 ${e.place}</span>${e.locker?`<span>🚪 Spogl. ${e.locker}</span>`:''}</div>`}return `<div class="ev ${extra?'extra':'train'}"><b>${label}</b><strong>⏰ ${e.time}</strong><span>📍 ${e.place}</span>${e.locker?`<span>🚪 Spogl. ${e.locker}</span>`:''}</div>`;
+   }).join('');
+   cells+=`<div class="cell ${inMonth?'':'outside'}"><div class="num">${d.getDate()}</div>${evhtml}</div>`;
+   d.setDate(d.getDate()+1);
+  }
+  const html=`<!doctype html><html><head><title>DBW ${cat} ${title}</title><style>
+   @page{size:A4 landscape;margin:7mm}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;padding:0;font-family:Arial,sans-serif;color:#17231c;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+   .page{height:196mm;display:flex;flex-direction:column}.head{height:25mm;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #17643d;padding:0 2mm 3mm}.brand{display:flex;align-items:center;gap:4mm}.brand img{width:18mm;height:18mm;object-fit:contain}.brand h1{margin:0;color:#155c39;font-size:17pt;letter-spacing:.3px}.brand p{margin:1mm 0 0;font-size:10pt;font-weight:700}.month{text-align:right}.month h2{margin:0;color:#155c39;font-size:23pt}.month span{font-size:9pt;color:#6a756e;font-weight:700}
+   .dow{display:grid;grid-template-columns:repeat(7,1fr);gap:1.5mm;margin-top:3mm}.dow div{text-align:center;background:#155c39;color:#fff;padding:1.8mm;border-radius:2mm;font-size:8.5pt;font-weight:900;letter-spacing:.5px}
+   .cal{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(${Math.ceil(((gridEnd-gridStart)/86400000+1)/7)},1fr);gap:1.5mm;margin-top:1.5mm;min-height:0}.cell{position:relative;border:1px solid #d7e1da;border-radius:2.5mm;padding:6mm 1.5mm 1.5mm;overflow:hidden;background:#fff}.outside{background:#f5f7f5;color:#a8afaa}.num{position:absolute;top:1.2mm;left:1.7mm;font-size:8.5pt;font-weight:900;color:#155c39}.outside .num{color:#a8afaa}
+   .ev{border-radius:1.8mm;padding:1.2mm 1.4mm;margin-bottom:1mm;font-size:6.8pt;line-height:1.15;border-left:3px solid #2d7b52;background:#eef7f1}.ev b{display:block;font-size:6.3pt;letter-spacing:.3px;color:#1d6944}.ev strong{display:block;font-size:8pt;margin:.5mm 0}.ev span{display:block;white-space:normal}.ev.match{background:linear-gradient(135deg,#fff7f9,#ffe5ec);border:1px solid #efb2c2;border-left:4px solid #d65378;box-shadow:0 1px 0 rgba(181,55,93,.08);padding-top:1.2mm}.ev.match>b{display:block;background:#d65378;color:#fff;font-size:6.6pt;letter-spacing:.35px;margin:-1.2mm -1.4mm .8mm;padding:1mm 1.4mm;border-radius:1.3mm 1.3mm .5mm .5mm}.ev.match .opp{font-weight:900;font-size:7.2pt;margin:.6mm 0;color:#6d263b}.ev.match .timing{font-size:6.6pt;margin:.25mm 0}.ev.match .timing strong{display:inline;font-size:6.6pt;margin:0}.ev.extra{background:#fff8e7;border-left-color:#d5a23d}.ev.extra b{color:#956a13}
+   .legend{height:9mm;display:flex;align-items:end;gap:6mm;font-size:7.5pt;color:#59665e}.key{display:flex;align-items:center;gap:1.5mm}.dot{width:3mm;height:3mm;border-radius:1mm;background:#eef7f1;border-left:2px solid #2d7b52}.dot.m{background:#fff0f4;border-left-color:#d65378}.foot{margin-left:auto;font-size:7pt;color:#7a837e}
+  </style></head><body><div class="page"><div class="head"><div class="brand"><img src="${base}logo.png"><div><h1>DOLOMITI BELLUNESI WOMEN</h1><p>${cat} · PLANNING MENSILE</p></div></div><div class="month"><h2>${title}</h2><span>Allenamenti e partite</span></div></div><div class="dow">${DAYS.map(x=>`<div>${x.toUpperCase()}</div>`).join('')}</div><div class="cal">${cells}</div><div class="legend"><div class="key"><i class="dot"></i> Allenamento</div><div class="key"><i class="dot m"></i> Partita</div><div class="foot">Aggiornato al ${new Date().toLocaleDateString('it-IT')}</div></div></div><script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();return;
+ }
+ const rows=es.map(e=>{const d=new Date(e.date+'T12:00:00');const isMatch=e.type==='match';const type=isMatch?`⚽ ${(e.competition||'Partita').toUpperCase()}`:e.type==='extra'?'ALLENAMENTO EXTRA':e.type==='other'?'ALTRO':'ALLENAMENTO';const match=isMatch?(e.homeAway==='away'?`${e.opponent} - DOLOMITI BELLUNESI WOMEN`:`DOLOMITI BELLUNESI WOMEN - ${e.opponent}`):'';const timeHtml=isMatch?`${e.meetingTime?`<p class="bigline">⏰ <b>Ora del ritrovo:</b> ${e.meetingTime}</p>`:''}<p class="bigline">⏰ <b>Inizio partita:</b> ${e.startTime||e.time||''}</p>`:`<h3>⏰ ${e.time}</h3>`;return `<div class="pe ${isMatch?'pm':''}"><div class="pd">${DAYS[(d.getDay()+6)%7].toUpperCase()}<strong>${d.getDate()} ${MONTHS[d.getMonth()].toUpperCase()}</strong></div><div class="pc"><span>${type}</span>${match?`<h2>${match}</h2>`:''}${timeHtml}<p>📍 ${e.place}</p>${e.locker?`<p>🚪 <b>Spogliatoio:</b> ${e.locker}</p>`:''}${e.notes?`<p>${e.notes}</p>`:''}</div></div>`}).join('')||'<div class="none">Nessun evento programmato.</div>';
+ const w=window.open('','_blank');w.document.write(`<!doctype html><html><head><title>DBW ${cat} ${title}</title><style>@page{size:A4;margin:12mm}body{font-family:Arial,sans-serif;color:#1f2328;margin:0}.head{display:flex;align-items:center;border-bottom:4px solid #247a4b;padding-bottom:12px;margin-bottom:18px}.head img{width:70px;height:70px;margin-right:14px}.head h1{font-size:22px;margin:0;color:#175737}.head h2{margin:5px 0 0;font-size:18px}.title{font-size:28px;font-weight:900;margin:15px 0;color:#175737}.pe{display:grid;grid-template-columns:110px 1fr;border:1px solid #dce5df;border-left:7px solid #247a4b;border-radius:12px;margin:12px 0;overflow:hidden;break-inside:avoid}.pm{border-left-color:#df7289;background:linear-gradient(135deg,#fff8fa,#fff0f4)}.pd{padding:14px;background:#f4f7f5;font-weight:800;font-size:12px}.pd strong{display:block;font-size:17px;margin-top:4px}.pc{padding:14px}.pc span{font-size:11px;font-weight:900;letter-spacing:.6px;color:#247a4b}.pm .pc span{color:#b74760}.pc h2{font-size:18px;margin:7px 0}.pc h3{font-size:18px;margin:6px 0}.pc p{margin:4px 0;font-size:14px}.pc .bigline{font-size:15px;margin:6px 0}.foot{margin-top:20px;border-top:1px solid #ddd;padding-top:10px;color:#68726d;font-size:11px}.none{padding:30px;text-align:center;color:#777}</style></head><body><div class="head"><img src="${base}logo.png"><div><h1>DOLOMITI BELLUNESI WOMEN</h1><h2>${cat}</h2></div></div><div class="title">${title}</div>${rows}<div class="foot">Planning categoria ${cat}. Generato il ${new Date().toLocaleDateString('it-IT')}.</div><script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`);w.document.close();
+}
+document.getElementById('exportWeekly').onclick=()=>printDocument('week');document.getElementById('exportMonthly').onclick=()=>printDocument('month');
+renderAll();
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>

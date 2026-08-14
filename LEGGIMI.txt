@@ -1,0 +1,12 @@
+DBW PLANNER 2026/27 — V4 PWA
+
+File da pubblicare tutti insieme nella root del repository GitHub Pages:
+- index.html
+- logo.png
+- icon-192.png
+- icon-512.png
+- manifest.webmanifest
+- service-worker.js
+
+La web app è installabile sulla schermata Home di iPhone/Android dopo la pubblicazione HTTPS.
+I dati sono salvati nel browser del dispositivo (localStorage).

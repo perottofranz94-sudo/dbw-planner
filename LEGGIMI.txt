@@ -1,12 +1,9 @@
-DBW PLANNER 2026/27 — V4 PWA
+DBW PLANNER 2026/27 — V5 CLOUD SYNC
 
-File da pubblicare tutti insieme nella root del repository GitHub Pages:
-- index.html
-- logo.png
-- icon-192.png
-- icon-512.png
-- manifest.webmanifest
-- service-worker.js
+Questa versione sincronizza gli eventi tramite Supabase tra Mac, iPhone e altri dispositivi.
 
-La web app è installabile sulla schermata Home di iPhone/Android dopo la pubblicazione HTTPS.
-I dati sono salvati nel browser del dispositivo (localStorage).
+Per aggiornare GitHub Pages, sostituisci i file del repository con quelli contenuti in questa cartella (soprattutto index.html e service-worker.js).
+
+Al primo avvio su un dispositivo con il database DBW vuoto, gli allenamenti ricorrenti vengono caricati automaticamente nel cloud.
+
+IMPORTANTE: la configurazione attuale usa policy anonime sulla sola tabella dbw_events. Funziona, ma chi conosce il link dell'app e ne analizza il codice potrebbe tecnicamente modificare i dati DBW. La prossima evoluzione consigliata è aggiungere login personale/PIN con Supabase Auth e restringere le policy.

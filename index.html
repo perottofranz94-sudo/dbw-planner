@@ -30,7 +30,7 @@ button,input,select{font:inherit}
 header{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff;padding:calc(14px + env(safe-area-inset-top)) 22px 14px;position:sticky;top:0;z-index:10;box-shadow:0 8px 24px rgba(0,0,0,.12)}
 .header-inner{max-width:1300px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}
 .brand{display:flex;align-items:center;gap:14px}.brand img{width:60px;height:60px;border-radius:50%;background:#fff;padding:3px}.brand h1{margin:0;font-size:clamp(20px,2.4vw,30px);line-height:1.05}.brand small{display:block;opacity:.85;margin-top:5px}
-.header-actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:750;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-1px)}.btn-light{background:#fff;color:var(--green-dark)}.btn-pink{background:var(--pink);color:#3a1c24}.btn-ghost{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.25)}
+.header-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.sync-pill{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);font-size:12px;font-weight:800;white-space:nowrap}.sync-pill.ok{background:rgba(255,255,255,.18)}.sync-pill.err{background:rgba(120,20,30,.28)}.sync-dot{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.13)}.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:750;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-1px)}.btn-light{background:#fff;color:var(--green-dark)}.btn-pink{background:var(--pink);color:#3a1c24}.btn-ghost{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.25)}
 main{max-width:1300px;margin:24px auto;padding:0 18px 50px}
 .toolbar{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;margin-bottom:18px}.tabs{display:flex;gap:10px;flex-wrap:wrap}.tab{background:#fff;border:1px solid var(--line);padding:11px 18px;border-radius:999px;font-weight:800;cursor:pointer}.tab.active{background:var(--green);color:#fff;border-color:var(--green)}
 .control{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.view-switch{display:flex;gap:6px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px}.view-switch button{border:0;background:transparent;padding:8px 12px;border-radius:9px;font-weight:700;cursor:pointer}.view-switch button.active{background:#e9f4ee;color:var(--green-dark)}
@@ -54,6 +54,7 @@ main{max-width:1300px;margin:24px auto;padding:0 18px 50px}
   <div class="header-inner">
     <div class="brand"><img src="logo.png" alt="Logo"><div><h1>DOLOMITI BELLUNESI WOMEN</h1><small>Planning stagione 2026/27</small></div></div>
     <div class="header-actions">
+      <div class="sync-pill" id="syncStatus"><span class="sync-dot"></span><span>Connessione…</span></div>
       <button class="btn btn-pink" id="addEventBtn">＋ Aggiungi evento</button>
       <button class="btn btn-light" id="exportWeekly">PDF settimanale</button>
       <button class="btn btn-light" id="exportMonthly">PDF mensile</button>
@@ -106,6 +107,11 @@ let activeCategory="UNDER 12";
 let currentDate=new Date(2026,8,1);
 let view="month";
 const STORAGE_KEY="dbw_planner_2026_27_v1";
+const SUPABASE_URL="https://xcdfjxrvnqpxdievdmcf.supabase.co";
+const SUPABASE_KEY="sb_publishable_1-rqbtzWKxGW4iZM2j0DtA_gMitolc9";
+const DBW_API=`${SUPABASE_URL}/rest/v1/dbw_events`;
+let cloudReady=false;
+let syncing=false;
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
 function iso(d){return d.toISOString().slice(0,10)}
 function dateLocal(y,m,d){return new Date(y,m,d,12,0,0)}
@@ -119,9 +125,45 @@ function recurringEvents(){
   for(const c of configs){let d=new Date(c.start+"T12:00:00"); while(d<=end){const js=d.getDay(); if(c.days[js]){const [time,place]=c.days[js]; out.push({id:"base_"+c.cat+"_"+iso(d),base:true,category:c.cat,type:"training",date:iso(d),time,place,opponent:"",homeAway:"home",competition:"",meetingTime:"",startTime:"",locker:"",notes:""});} d.setDate(d.getDate()+1)}}
   return out;
 }
-function loadData(){const raw=localStorage.getItem(STORAGE_KEY); if(raw) return JSON.parse(raw); const data=recurringEvents(); localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); return data}
+function loadData(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw)return JSON.parse(raw)}catch(e){}return recurringEvents()}
 let events=loadData();
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(events))}
+function cleanTime(t){return t?String(t).slice(0,5):""}
+function eventToRow(e){
+  let start="",end="";
+  if(e.type==='match') start=e.startTime||e.time||'';
+  else if(e.time){const p=e.time.split('-').map(x=>x.trim());start=p[0]||'';end=p[1]||''}
+  return {category:e.category,event_date:e.date,event_type:e.type,match_type:e.competition||null,opponent:e.opponent||null,home_away:e.homeAway||null,start_time:start||null,end_time:end||null,meeting_time:e.meetingTime||null,location:e.place||'',changing_room:e.locker||null,notes:e.notes||null,updated_at:new Date().toISOString()};
+}
+function rowToEvent(r){
+  const st=cleanTime(r.start_time),en=cleanTime(r.end_time),isMatch=r.event_type==='match';
+  return {id:String(r.id),base:false,category:r.category,type:r.event_type,date:r.event_date,time:isMatch?'':(st+(en?'-'+en:'')),place:r.location||'',opponent:r.opponent||'',homeAway:r.home_away||'home',competition:r.match_type||'',meetingTime:cleanTime(r.meeting_time),startTime:isMatch?st:'',locker:r.changing_room||'',notes:r.notes||''};
+}
+function apiHeaders(extra={}){return {'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json',...extra}}
+function setSyncStatus(text,state=''){const el=document.getElementById('syncStatus');if(!el)return;el.classList.remove('ok','err');if(state)el.classList.add(state);el.querySelector('span:last-child').textContent=text}
+async function apiFetch(url,opts={}){const res=await fetch(url,{...opts,headers:apiHeaders(opts.headers||{})});if(!res.ok){const body=await res.text();throw new Error(`${res.status} ${body}`)}if(res.status===204)return null;const txt=await res.text();return txt?JSON.parse(txt):null}
+async function fetchCloudEvents(){return apiFetch(`${DBW_API}?select=*&order=event_date.asc,start_time.asc`)}
+async function bootstrapCloud(){
+  if(syncing)return;syncing=true;setSyncStatus('Sincronizzazione…');
+  try{
+    let rows=await fetchCloudEvents();
+    if(!rows.length){
+      const seed=(events&&events.length?events:recurringEvents()).map(eventToRow);
+      rows=await apiFetch(DBW_API,{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify(seed)})||[];
+    }
+    events=rows.map(rowToEvent);save();cloudReady=true;renderAll();setSyncStatus('Sincronizzato','ok');
+  }catch(err){console.error('DBW sync error',err);cloudReady=false;setSyncStatus('Offline · dati locali','err');renderAll()}
+  finally{syncing=false}
+}
+async function refreshCloud(silent=false){
+  if(syncing)return;syncing=true;if(!silent)setSyncStatus('Aggiornamento…');
+  try{const rows=await fetchCloudEvents();events=rows.map(rowToEvent);save();cloudReady=true;renderAll();setSyncStatus('Sincronizzato','ok')}
+  catch(err){console.error(err);cloudReady=false;setSyncStatus('Offline · dati locali','err')}
+  finally{syncing=false}
+}
+async function createCloudEvent(item){const rows=await apiFetch(DBW_API,{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify(eventToRow(item))});return rowToEvent(rows[0])}
+async function updateCloudEvent(id,item){const rows=await apiFetch(`${DBW_API}?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',headers:{'Prefer':'return=representation'},body:JSON.stringify(eventToRow(item))});return rows&&rows[0]?rowToEvent(rows[0]):item}
+async function deleteCloudEvent(id){await apiFetch(`${DBW_API}?id=eq.${encodeURIComponent(id)}`,{method:'DELETE',headers:{'Prefer':'return=minimal'}})}
 function byDate(a,b){return a.date.localeCompare(b.date)||a.time.localeCompare(b.time)}
 function categoryEvents(){return events.filter(e=>e.category===activeCategory).sort(byDate)}
 function renderTabs(){const el=document.getElementById('categoryTabs');el.innerHTML='';CATEGORIES.forEach(c=>{const b=document.createElement('button');b.className='tab'+(c===activeCategory?' active':'');b.textContent=c;b.onclick=()=>{activeCategory=c;renderAll()};el.appendChild(b)})}
@@ -136,10 +178,32 @@ function switchView(v){view=v;document.getElementById('monthView').classList.tog
 function openModal(){document.getElementById('modalBackdrop').classList.add('show')}
 function closeModal(){document.getElementById('modalBackdrop').classList.remove('show')}
 window.openAdd=function(ds){document.getElementById('eventForm').reset();document.getElementById('eventId').value='';document.getElementById('eventCategory').value=activeCategory;document.getElementById('eventDate').value=ds||iso(new Date());document.getElementById('eventCompetition').value='Campionato';document.getElementById('modalTitle').textContent='Aggiungi evento';document.getElementById('deleteEvent').classList.add('hidden');toggleMatchFields();openModal()}
-window.editEvent=function(id){const e=events.find(x=>x.id===id);if(!e)return;document.getElementById('eventId').value=e.id;document.getElementById('eventCategory').value=e.category;document.getElementById('eventType').value=e.type;document.getElementById('eventDate').value=e.date;document.getElementById('eventTime').value=e.time||'';document.getElementById('eventPlace').value=e.place;document.getElementById('eventOpponent').value=e.opponent||'';document.getElementById('eventHomeAway').value=e.homeAway||'home';document.getElementById('eventCompetition').value=e.competition||'Campionato';document.getElementById('eventMeetingTime').value=e.meetingTime||'';document.getElementById('eventStartTime').value=e.startTime||((e.type==='match'&&e.time&&/^\d{1,2}:\d{2}$/.test(e.time))?e.time:'');document.getElementById('eventLocker').value=e.locker||'';document.getElementById('eventNotes').value=e.notes||'';document.getElementById('modalTitle').textContent='Modifica evento';document.getElementById('deleteEvent').classList.remove('hidden');toggleMatchFields();openModal()}
+window.editEvent=function(id){const e=events.find(x=>String(x.id)===String(id));if(!e)return;document.getElementById('eventId').value=e.id;document.getElementById('eventCategory').value=e.category;document.getElementById('eventType').value=e.type;document.getElementById('eventDate').value=e.date;document.getElementById('eventTime').value=e.time||'';document.getElementById('eventPlace').value=e.place;document.getElementById('eventOpponent').value=e.opponent||'';document.getElementById('eventHomeAway').value=e.homeAway||'home';document.getElementById('eventCompetition').value=e.competition||'Campionato';document.getElementById('eventMeetingTime').value=e.meetingTime||'';document.getElementById('eventStartTime').value=e.startTime||((e.type==='match'&&e.time&&/^\d{1,2}:\d{2}$/.test(e.time))?e.time:'');document.getElementById('eventLocker').value=e.locker||'';document.getElementById('eventNotes').value=e.notes||'';document.getElementById('modalTitle').textContent='Modifica evento';document.getElementById('deleteEvent').classList.remove('hidden');toggleMatchFields();openModal()}
 function toggleMatchFields(){const isMatch=document.getElementById('eventType').value==='match';document.getElementById('matchFields').classList.toggle('hidden',!isMatch);document.getElementById('standardTimeField').classList.toggle('hidden',isMatch);document.getElementById('eventTime').required=!isMatch;document.getElementById('eventOpponent').required=isMatch;document.getElementById('eventStartTime').required=isMatch}
-document.getElementById('eventForm').addEventListener('submit',ev=>{ev.preventDefault();const id=document.getElementById('eventId').value||uid();const isMatch=document.getElementById('eventType').value==='match';const item={id,base:false,category:document.getElementById('eventCategory').value,type:document.getElementById('eventType').value,date:document.getElementById('eventDate').value,time:isMatch?'':document.getElementById('eventTime').value.trim(),place:document.getElementById('eventPlace').value.trim(),opponent:isMatch?document.getElementById('eventOpponent').value.trim():'',homeAway:isMatch?document.getElementById('eventHomeAway').value:'home',competition:isMatch?document.getElementById('eventCompetition').value:'',meetingTime:isMatch?document.getElementById('eventMeetingTime').value:'',startTime:isMatch?document.getElementById('eventStartTime').value:'',locker:document.getElementById('eventLocker').value.trim(),notes:document.getElementById('eventNotes').value.trim()};const idx=events.findIndex(x=>x.id===id);if(idx>=0)events[idx]=item;else events.push(item);save();closeModal();renderAll()})
-document.getElementById('deleteEvent').onclick=()=>{const id=document.getElementById('eventId').value;if(!id)return;if(confirm('Eliminare questo evento?')){events=events.filter(e=>e.id!==id);save();closeModal();renderAll()}}
+document.getElementById('eventForm').addEventListener('submit',async ev=>{
+ ev.preventDefault();
+ const existingId=document.getElementById('eventId').value;
+ const isMatch=document.getElementById('eventType').value==='match';
+ const item={id:existingId||uid(),base:false,category:document.getElementById('eventCategory').value,type:document.getElementById('eventType').value,date:document.getElementById('eventDate').value,time:isMatch?'':document.getElementById('eventTime').value.trim(),place:document.getElementById('eventPlace').value.trim(),opponent:isMatch?document.getElementById('eventOpponent').value.trim():'',homeAway:isMatch?document.getElementById('eventHomeAway').value:'home',competition:isMatch?document.getElementById('eventCompetition').value:'',meetingTime:isMatch?document.getElementById('eventMeetingTime').value:'',startTime:isMatch?document.getElementById('eventStartTime').value:'',locker:document.getElementById('eventLocker').value.trim(),notes:document.getElementById('eventNotes').value.trim()};
+ const submit=ev.submitter; if(submit){submit.disabled=true;submit.textContent='Salvataggio…'}
+ try{
+   setSyncStatus('Salvataggio…');
+   if(!cloudReady)await refreshCloud(true);
+   if(!cloudReady)throw new Error('Connessione al cloud non disponibile');
+   const saved=existingId?await updateCloudEvent(existingId,item):await createCloudEvent(item);
+   const idx=events.findIndex(x=>String(x.id)===String(existingId));
+   if(idx>=0)events[idx]=saved;else events.push(saved);
+   save();closeModal();renderAll();setSyncStatus('Sincronizzato','ok');
+ }catch(err){console.error(err);alert('Non riesco a salvare nel cloud. Controlla la connessione e riprova: nessuna modifica è stata persa nel database.');setSyncStatus('Errore sincronizzazione','err')}
+ finally{if(submit){submit.disabled=false;submit.textContent='Salva'}}
+})
+document.getElementById('deleteEvent').onclick=async()=>{
+ const id=document.getElementById('eventId').value;if(!id)return;
+ if(confirm('Eliminare questo evento da tutti i dispositivi?')){
+   try{setSyncStatus('Eliminazione…');await deleteCloudEvent(id);events=events.filter(e=>String(e.id)!==String(id));save();closeModal();renderAll();setSyncStatus('Sincronizzato','ok')}
+   catch(err){console.error(err);alert('Non riesco a eliminare l’evento dal cloud. Riprova con una connessione internet.');setSyncStatus('Errore sincronizzazione','err')}
+ }
+}
 document.getElementById('addEventBtn').onclick=()=>openAdd(iso(new Date()));document.getElementById('closeModal').onclick=closeModal;document.getElementById('cancelModal').onclick=closeModal;document.getElementById('eventType').onchange=toggleMatchFields;
 document.getElementById('monthPicker').onchange=e=>{const [y,m]=e.target.value.split('-').map(Number);currentDate=new Date(y,m-1,1);renderAll()};
 document.getElementById('monthViewBtn').onclick=()=>switchView('month');document.getElementById('weekViewBtn').onclick=()=>switchView('week');
@@ -188,6 +252,10 @@ function printDocument(mode){
 }
 document.getElementById('exportWeekly').onclick=()=>printDocument('week');document.getElementById('exportMonthly').onclick=()=>printDocument('month');
 renderAll();
+bootstrapCloud();
+setInterval(()=>{if(document.visibilityState==='visible')refreshCloud(true)},15000);
+window.addEventListener('focus',()=>refreshCloud(true));
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshCloud(true)});
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
 }

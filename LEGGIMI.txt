@@ -5,3 +5,5 @@ DBW PLANNER V6
 4) Apri l'app e usa "Stagioni e squadre".
 
 La migrazione conserva gli eventi DBW esistenti e non tocca le tabelle di MANEGGIO VP.
+
+V6.1: aggiunto pulsante 'Torna alla Dashboard' nelle pagine PDF/di stampa, visibile su smartphone ma escluso dal PDF stampato.

@@ -1,0 +1,1 @@
+-- NON ESEGUIRE ANCORA. Le policy RLS definitive saranno applicate solo dopo il test positivo del login V6.2.

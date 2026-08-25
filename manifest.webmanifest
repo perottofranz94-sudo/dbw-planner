@@ -1,7 +1,7 @@
 {
-  "name": "Dolomiti Bellunesi Women Planner 2026/27",
+  "name": "Dolomiti Bellunesi Women Planner",
   "short_name": "DBW Planner",
-  "description": "Planning allenamenti e partite Dolomiti Bellunesi Women",
+  "description": "Planning, presenze e report Dolomiti Bellunesi Women",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

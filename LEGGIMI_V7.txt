@@ -1,0 +1,7 @@
+DBW PLANNER V7 - PRESENZE E REPORT
+
+1) Prima di caricare la V7 su GitHub, esegui in Supabase SQL Editor il file MIGRAZIONE_SUPABASE_V7_PRESENZE.sql.
+2) Dopo Success. No rows returned, carica tutti i file della cartella nel repository DBW Planner.
+3) La V7 aggiunge: rosa calciatrici, presenze allenamento/partita, assenze giustificate/ingiustificate, minuti partita configurabili, report squadra e individuale, PDF report.
+4) Gli allenamenti considerano di default tutte le calciatrici presenti per 90 minuti, salvo assenze registrate.
+5) Le partite vanno compilate. Per UNDER 12 i minuti sono disattivati di default.

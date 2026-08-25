@@ -1,0 +1,11 @@
+DBW PLANNER V6.2 — FIX JWT EXPIRED
+
+Correzione: la publishable key Supabase viene ora inviata solo nell'header apikey.
+Non viene più usata impropriamente come Bearer JWT nell'header Authorization.
+Questo risolve l'errore PGRST303 "JWT expired" durante salvataggio/modifica squadre e allenamenti standard.
+
+Carica su GitHub almeno:
+- index.html
+- service-worker.js
+
+Dopo il commit, chiudi completamente la PWA su iPhone e riaprila.

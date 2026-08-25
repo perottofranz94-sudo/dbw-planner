@@ -1,0 +1,1 @@
+V6.3: quando si modificano gli allenamenti standard di una squadra, gli allenamenti standard già generati per quella stagione vengono sostituiti con il nuovo schema. Partite, allenamenti extra e altri eventi restano invariati.
